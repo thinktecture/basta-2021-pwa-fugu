@@ -1,10 +1,10 @@
-import {AfterViewInit, Component, ElementRef, ViewChild} from '@angular/core';
-import {PaintService} from './paint.service';
+import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
+import { PaintService } from './paint.service';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+  styleUrls: ['./app.component.css'],
 })
 export class AppComponent implements AfterViewInit {
   @ViewChild('canvas')
@@ -37,18 +37,18 @@ export class AppComponent implements AfterViewInit {
   }
 
   onPointerDown(event: PointerEvent): void {
-    this.previousPoint = {x: Math.floor(event.offsetX), y: Math.floor(event.offsetY)};
+    this.previousPoint = { x: ~~event.offsetX, y: ~~event.offsetY };
   }
 
-  onPointerMove(canvas: HTMLCanvasElement, event: PointerEvent): void {
+  onPointerMove(event: PointerEvent): void {
     if (this.previousPoint) {
-      const currentPoint = {x: Math.floor(event.offsetX), y: Math.floor(event.offsetY)};
+      const currentPoint = { x: ~~event.offsetX, y: ~~event.offsetY };
+      this.previousPoint = currentPoint;
       for (const {
         x,
         y
       } of this.paintService.bresenhamLine(this.previousPoint.x, this.previousPoint.y, currentPoint.x, currentPoint.y)) {
         this.context.fillRect(x, y, 2, 2);
-        this.previousPoint = currentPoint;
       }
     }
   }
@@ -79,7 +79,7 @@ export class AppComponent implements AfterViewInit {
   async copy(): Promise<void> {
     const blob = await this.paintService.toBlob(this.canvas.nativeElement);
     await navigator.clipboard.write([
-      new ClipboardItem({[blob.type]: blob})
+      new ClipboardItem({ [blob.type]: blob }),
     ]);
   }
 
@@ -98,9 +98,9 @@ export class AppComponent implements AfterViewInit {
 
   async share(): Promise<any> {
     const blob = await this.paintService.toBlob(this.canvas.nativeElement);
-    const file = new File([blob], 'untitled.png', {type: 'image/png'});
-    const item = {files: [file], title: 'untitled.png'};
-    if (await navigator.canShare(item)) {
+    const file = new File([blob], 'untitled.png', { type: 'image/png' });
+    const item = { files: [file], title: 'untitled.png' };
+    if (navigator.canShare(item)) {
       await navigator.share(item);
     }
   }
