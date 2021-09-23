@@ -26,10 +26,10 @@ export class AppComponent implements AfterViewInit {
   }
 
   onPointerDown(event: PointerEvent): void {
-    this.previousPoint = {x: Math.floor(event.offsetX), y: Math.floor(event.offsetY)};
+    this.previousPoint = {x: ~~event.offsetX, y: ~~event.offsetY};
   }
 
-  onPointerMove(canvas: HTMLCanvasElement, event: PointerEvent): void {
+  onPointerMove(event: PointerEvent): void {
     // EX #4
   }
 
