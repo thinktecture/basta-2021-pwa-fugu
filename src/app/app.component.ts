@@ -25,7 +25,7 @@ export class AppComponent implements AfterViewInit {
     ctx.fillStyle = 'black';
 
     if ('launchQueue' in window) {
-      (window as any).launchQueue.setConsumer(async params => {
+      window.launchQueue.setConsumer(async params => {
         const [handle] = params.files;
         if (handle) {
           const file = await handle.getFile();
@@ -37,17 +37,17 @@ export class AppComponent implements AfterViewInit {
   }
 
   onPointerDown(event: PointerEvent): void {
-    this.previousPoint = { x: ~~event.offsetX, y: ~~event.offsetY };
+    this.previousPoint = { x: event.offsetX, y: event.offsetY };
   }
 
   onPointerMove(event: PointerEvent): void {
     if (this.previousPoint) {
-      const currentPoint = { x: ~~event.offsetX, y: ~~event.offsetY };
+      const currentPoint = { x: event.offsetX, y: event.offsetY };
       this.previousPoint = currentPoint;
       for (const {
         x,
         y
-      } of this.paintService.bresenhamLine(this.previousPoint.x, this.previousPoint.y, currentPoint.x, currentPoint.y)) {
+      } of this.paintService.bresenhamLine(this.previousPoint, currentPoint)) {
         this.context.fillRect(x, y, 2, 2);
       }
     }

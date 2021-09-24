@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class PaintService {
   toBlob(canvas): Promise<Blob> {
@@ -26,7 +26,11 @@ export class PaintService {
     });
   }
 
-  * bresenhamLine(x0, y0, x1, y1): Generator<{x: number, y: number}> {
+  * bresenhamLine(previous: { x: number, y: number }, current: { x: number, y: number }): Generator<{ x: number, y: number }> {
+    let x0 = ~~previous.x;
+    let y0 = ~~previous.y;
+    const x1 = ~~current.x;
+    const y1 = ~~current.y;
     const dx = Math.abs(x1 - x0);
     const dy = Math.abs(y1 - y0);
     const sx = (x0 < x1) ? 1 : -1;
@@ -34,7 +38,7 @@ export class PaintService {
     let err = dx - dy;
 
     while (true) {
-      yield {x: x0, y: y0};
+      yield { x: x0, y: y0 };
 
       if (x0 === x1 && y0 === y1) {
         break;
