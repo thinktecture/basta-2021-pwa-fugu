@@ -1,11 +1,11 @@
 import { AfterViewInit, Component, ElementRef, Inject, ViewChild } from '@angular/core';
-import {PaintService} from './paint.service';
-import {DOCUMENT} from "@angular/common";
+import { PaintService } from './paint.service';
+import { DOCUMENT } from '@angular/common';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+  styleUrls: ['./app.component.css'],
 })
 export class AppComponent implements AfterViewInit {
   // EX #1
@@ -13,9 +13,19 @@ export class AppComponent implements AfterViewInit {
   context: CanvasRenderingContext2D;
 
   // EX #11
+  private fileOptions = {
+    types: [{
+      description: 'PNG files',
+      accept: { 'image/png': ['.png'] },
+    }, {
+      description: 'JPG files',
+      accept: { 'image/jpeg': ['.jpg'] },
+    }],
+  }
 
 
   previousPoint: { x: number, y: number } | null = null;
+
   // EX #17
 
   constructor(private paintService: PaintService, @Inject(DOCUMENT) private document: Document) {
@@ -25,7 +35,7 @@ export class AppComponent implements AfterViewInit {
     // EX #2
     const canvas = this.canvas.nativeElement;
     const ctx = this.context = canvas.getContext('2d', {
-      desynchronized: true
+      desynchronized: true,
     });
 
     ctx.fillStyle = 'white';
@@ -36,7 +46,7 @@ export class AppComponent implements AfterViewInit {
   }
 
   onPointerDown(event: PointerEvent): void {
-    this.previousPoint = {x: ~~event.offsetX, y: ~~event.offsetY};
+    this.previousPoint = { x: ~~event.offsetX, y: ~~event.offsetY };
   }
 
   onPointerMove(event: PointerEvent): void {
@@ -45,7 +55,7 @@ export class AppComponent implements AfterViewInit {
       const points = this.paintService.bresenhamLine(this.previousPoint.x,
         this.previousPoint.y, currentPoint.x, currentPoint.y);
 
-      for (const {x, y} of points) {
+      for (const { x, y } of points) {
         this.context.fillRect(x, y, 2, 2);
       }
 
@@ -68,6 +78,11 @@ export class AppComponent implements AfterViewInit {
 
   async save(): Promise<void> {
     // EX #11
+    const blob = await this.paintService.toBlob(this.canvas.nativeElement);
+    const handle = await window.showSaveFilePicker(this.fileOptions);
+    const writeable = await handle.createWritable();
+    await writeable.write(blob);
+    await writeable.close();
     // EX #18
   }
 
