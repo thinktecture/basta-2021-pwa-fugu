@@ -62,7 +62,7 @@ export class AppComponent implements AfterViewInit {
   }
 
   async open(): Promise<void> {
-    const [handle] = await showOpenFilePicker();
+    const [handle] = await window.showOpenFilePicker();
     const file = await handle.getFile();
     const image = await this.paintService.getImage(file);
     this.context.drawImage(image, 0, 0);
@@ -70,7 +70,7 @@ export class AppComponent implements AfterViewInit {
 
   async save(): Promise<void> {
     const blob = await this.paintService.toBlob(this.canvas.nativeElement);
-    const handle = await (window as any).showSaveFilePicker();
+    const handle = await window.showSaveFilePicker();
     const writable = await handle.createWritable();
     await writable.write(blob);
     await writable.close();
